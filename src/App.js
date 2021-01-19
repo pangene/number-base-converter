@@ -26,12 +26,14 @@ class App extends React.Component {
     this.state = {
       value: DEFAULT_VALUE,  // value always stored as decimal
       baseFrom: DEFAULT_BASE_FROM,
-      baseTo: DEFAULT_BASE_TO
+      baseTo: DEFAULT_BASE_TO,
+      validBases: true  // Hacky way of making bases work
     };
 
     this.onValueChange = this.onValueChange.bind(this);
     this.onBaseFromChange = this.onBaseFromChange.bind(this);
     this.onBaseToChange = this.onBaseToChange.bind(this);
+    this.validateBases = this.validateBases.bind(this);
   }
 
   onValueChange(value) {
@@ -46,6 +48,10 @@ class App extends React.Component {
     this.setState({baseTo});
   }
 
+  validateBases(bool) {
+    this.setState({validBases: bool})
+  }
+
   render() {
     return (
       <div>
@@ -53,13 +59,17 @@ class App extends React.Component {
           <NumberBaseInput 
             value={this.state.value}
             base={this.state.baseFrom}
+            validBases={this.state.validBases}
             onValueChange={this.onValueChange}
-            onBaseChange={this.onBaseFromChange}/> 
+            onBaseChange={this.onBaseFromChange}
+            validateBases={this.validateBases}/> 
           <i className="arrow fa fa-long-arrow-right"></i> 
           <NumberBaseInput 
             value={this.state.value}
             base={this.state.baseTo}
+            validBases={this.state.validBases}
             onBaseChange={this.onBaseToChange}
+            validateBases={this.validateBases}
             readOnly={true}/>
         </div>
         <hr />
@@ -92,8 +102,12 @@ class NumberBaseInput extends React.Component {
   handleBaseChange(e) {
     let base = e.target.value;
     // TODO: Make changing bases better
-    if (e.target.value < 2) base = 2;
-    if (e.target.value > 36) base = 36;
+    if (e.target.value < 2 || e.target.value > 36) {
+      base = 36;
+      this.props.validateBases(false);
+    } else {
+      this.props.validateBases(true);
+    }
     this.props.onBaseChange(base);
 
     if (!this.props.readOnly) { // Update internal value so the input value can stay the same
@@ -105,7 +119,13 @@ class NumberBaseInput extends React.Component {
 
   render() {
     const base = this.props.base;
-    const value = this.props.value.toString(base);
+
+    let value;
+    if (this.props.validBases) {
+      value = this.props.value.toString(base);
+    } else {
+      value = 'Invalid'
+    }
 
     let readOnly = '';
     if (this.props.readOnly) {
@@ -124,7 +144,7 @@ class NumberBaseInput extends React.Component {
         </div>
         <div className="base">
           <input type="text"
-            value={base}
+            defaultValue={base}
             onChange={this.handleBaseChange}/>
           <label>(base)</label>
         </div>
