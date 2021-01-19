@@ -1,7 +1,8 @@
 * {
   padding: 0;
   margin: 0;
-  font-family: Courier, monospace;
+  font-family: Menlo, monospace;
+  background: #f8f8ff;
 }
 
 #base-converter {
@@ -113,11 +114,14 @@
 
 .info i {
   color: blue;
-  font-size: 30px;
+  font-size: 25px;
   padding-bottom: 10px;
 }
 
-
+.info p {
+  font-family: "Gill Sans", sans-serif;
+  font-size: 18px;
+}
 
 
 @media only screen and (max-width: 790px) { 
