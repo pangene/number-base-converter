@@ -59,6 +59,7 @@
   font-size: 10px;
 }
 
+
 #visualizer {
   padding-top: 20px;
   display: block;
@@ -77,6 +78,8 @@
 .ending-value {
   text-align: right;
 }
+
+/* I completely forgot CSS in this section*/
 
 .equation {
   padding: 10px;
@@ -101,6 +104,21 @@
 .plus {
   padding-left: 84px;
 }
+
+.info {
+  margin: 20px;
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+.info i {
+  color: blue;
+  font-size: 30px;
+  padding-bottom: 10px;
+}
+
+
+
 
 @media only screen and (max-width: 790px) { 
   .to {

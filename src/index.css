@@ -47,15 +47,14 @@ body {
   align-items: center;
 }
 
-.block {
-  display: block;
-  border: black 1px solid;
+.rounded-border {
+  border: blue 1px solid;
+  border-radius: 20px;
 }
 
-.float-left {
-  float: left;
+.spacer {
+  height: 100px;
 }
-
 
 @media only screen and (max-width: 1200px) { 
   .container{

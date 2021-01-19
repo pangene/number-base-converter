@@ -55,7 +55,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <div id="base-converter">
+        <div className="centered" id="base-converter">
           <NumberBaseInput 
             value={this.state.value}
             base={this.state.baseFrom}
@@ -108,7 +108,7 @@ class NumberBaseInput extends React.Component {
     } else {
       this.props.validateBases(true);
     }
-    this.props.onBaseChange(base);
+    this.props.onBaseChange(+base);
 
     if (!this.props.readOnly) { // Update internal value so the input value can stay the same
       this.props.onValueChange(
@@ -260,17 +260,53 @@ class ConversionVisualizer extends React.Component {
     const baseFrom = this.props.baseFrom;
     const baseTo = this.props.baseTo;
 
-    const visualizeToDecimal = (value !== 'Invalid' 
+
+    // These booleans decide to selectively visualize only what's needed
+    // Info blurbs:
+
+    const binaryShortcutSet = new Set([2, 8, 16]);
+    let visualizeInfoBinaryShortcut = (
+      (binaryShortcutSet.has(baseTo) && binaryShortcutSet.has(baseFrom))
+      || (binaryShortcutSet.has(baseFrom) && binaryShortcutSet.has(baseTo))
+    );
+
+    let visualizeInfoNoDecimalBases = (baseTo !== 10 && baseFrom !== 10 
+      && !visualizeInfoBinaryShortcut
+    );
+
+    // Actual visualizers:
+    let visualizeToDecimal = (value !== 'Invalid' 
       && baseFrom !== baseTo 
       && baseFrom !== 10);
-    const visualizeFromDecimal = (value !== 'Invalid' 
+    let visualizeFromDecimal = (value !== 'Invalid' 
       && baseFrom !== baseTo
       && baseTo !== 10);
+
+    let noDecimalBlurb;
+    let binaryShortcutBlurb;
+
+    if (visualizeInfoNoDecimalBases) {
+      noDecimalBlurb = <InfoBlurb 
+        message="Note: Converting to decimal is not necessary to change between 
+        bases that are not decimal. However, our decimal-oriented society and
+        intuition makes it generally easier to convert to decimal. To avoid
+        converting to decimal, do all the math in terms of the numerical base 
+        you want to end up in!"/>
+    }
+
+    if (visualizeInfoBinaryShortcut) {
+      binaryShortcutBlurb = <InfoBlurb
+        message="Note: Binary (base 2) --> Octal (base 8) or Hexadecimal (base 
+        16) or vice versa has a shortcut by grouping the numbers in a particular 
+        way. It is not used in this visualization currently."/>
+    }
 
     return (
       <div className="centered" id="visualizer">
         <h2>Conversion visualized:</h2>
         <div id="visualizer-content">
+          {noDecimalBlurb}
+          {binaryShortcutBlurb}
           {visualizeToDecimal && this.renderToDecimal(value, baseFrom)}
           <br />
           {visualizeFromDecimal && this.renderFromDecimal(value, baseTo)}
@@ -278,6 +314,19 @@ class ConversionVisualizer extends React.Component {
       </div>
     )
   }
+}
+
+class InfoBlurb extends React.Component {
+  render() {
+    return (
+      <div className="rounded-border info">
+        <i className="fa fa-info-circle"></i>
+        <p>
+          {this.props.message}
+        </p>
+      </div>
+    )
+  }  
 }
 
 
