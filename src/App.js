@@ -6,6 +6,16 @@ const DEFAULT_VALUE = 22;
 const DEFAULT_BASE_FROM = 2;
 const DEFAULT_BASE_TO = 10;
 
+function validateParseIntInput(str, base) {
+  if (str === '') {
+    return false
+  }
+  str = str.toLowerCase();
+  let arr = Array.from(str);
+  arr.sort((a, b) => a > b ? a : b)
+  return arr.every(input => isFinite(parseInt(input, base)))
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -15,20 +25,20 @@ class App extends React.Component {
       baseTo: DEFAULT_BASE_TO
     };
 
-    this.handleValueChange = this.handleValueChange.bind(this);
-    this.handleBaseFromChange = this.handleBaseFromChange.bind(this);
-    this.handleBaseToChange = this.handleBaseToChange.bind(this);
+    this.onValueChange = this.onValueChange.bind(this);
+    this.onBaseFromChange = this.onBaseFromChange.bind(this);
+    this.onBaseToChange = this.onBaseToChange.bind(this);
   }
 
-  handleValueChange(value) {
+  onValueChange(value) {
     this.setState({value});
   }
 
-  handleBaseFromChange(baseFrom) {
+  onBaseFromChange(baseFrom) {
     this.setState({baseFrom});
   }
 
-  handleBaseToChange(baseTo) {
+  onBaseToChange(baseTo) {
     this.setState({baseTo});
   }
 
@@ -38,13 +48,13 @@ class App extends React.Component {
         <NumberBaseInput 
           value={this.state.value}
           base={this.state.baseFrom}
-          onValueChange={this.handleValueChange}
-          onBaseChange={this.handleBaseFromChange}/> 
+          onValueChange={this.onValueChange}
+          onBaseChange={this.onBaseFromChange}/> 
         <i className="to fa fa-long-arrow-right"></i> 
         <NumberBaseInput 
           value={this.state.value}
           base={this.state.baseTo}
-          onBaseChange={this.handleBaseToChange}
+          onBaseChange={this.onBaseToChange}
           readOnly={true}/>
         <hr />
         <ConversionVisualizer />
@@ -60,18 +70,34 @@ class NumberBaseInput extends React.Component {
     this.handleBaseChange = this.handleBaseChange.bind(this);
   }
 
-  handleValueChange(e) {
-    this.props.onValueChange(e.target.value);
+  handleValueChange(e, base=this.props.base) {  // validates value here b/c needs e.target.value
+    let value;
+    if (validateParseIntInput(e.target.value, base)) {
+      value = parseInt(e.target.value, base);
+    } else {
+      value = 'Invalid';
+    }
+    this.props.onValueChange(value);
   }
 
   handleBaseChange(e) {
-    this.props.onBaseChange(e.target.value);
+    let base = e.target.value;
+    if (e.target.value < 2) base = 2;
+    if (e.target.value > 36) base = 36;
+    this.props.onBaseChange(base);
+
+    if (!this.props.readOnly) { // Update internal value so the input value can stay the same
+      this.props.onValueChange(
+        parseInt(this.props.value.toString(this.props.base), base)
+        )
+    }
   }
 
   render() {
     const base = this.props.base;
 
     let value = this.props.value.toString(base);
+
     let readOnly = '';
     if (this.props.readOnly) {
       readOnly = 'readOnly';
@@ -81,12 +107,14 @@ class NumberBaseInput extends React.Component {
       <div className="number-base">
         <div className="number">
           <label>(number)</label>
-          <input type="text" id="value" readOnly={readOnly} 
-            value={value}
+          <input type="text" 
+            readOnly={readOnly} 
+            defaultValue={value}  // So program leaves user input alone
+            value = {this.props.readOnly ? value : null}
             onChange={this.handleValueChange}/>
         </div>
         <div className="base">
-          <input type="text" id="base" 
+          <input type="text"
             value={base}
             onChange={this.handleBaseChange}/>
           <label>(base)</label>
