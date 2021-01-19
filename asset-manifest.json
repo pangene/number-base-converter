@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/number-base-converter/static/css/main.dc5eab12.chunk.css",
+    "main.js": "/number-base-converter/static/js/main.a2861879.chunk.js",
+    "main.js.map": "/number-base-converter/static/js/main.a2861879.chunk.js.map",
+    "runtime-main.js": "/number-base-converter/static/js/runtime-main.d97d9421.js",
+    "runtime-main.js.map": "/number-base-converter/static/js/runtime-main.d97d9421.js.map",
+    "static/js/2.0a7db811.chunk.js": "/number-base-converter/static/js/2.0a7db811.chunk.js",
+    "static/js/2.0a7db811.chunk.js.map": "/number-base-converter/static/js/2.0a7db811.chunk.js.map",
+    "index.html": "/number-base-converter/index.html",
+    "static/css/main.dc5eab12.chunk.css.map": "/number-base-converter/static/css/main.dc5eab12.chunk.css.map",
+    "static/js/2.0a7db811.chunk.js.LICENSE.txt": "/number-base-converter/static/js/2.0a7db811.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d97d9421.js",
+    "static/js/2.0a7db811.chunk.js",
+    "static/css/main.dc5eab12.chunk.css",
+    "static/js/main.a2861879.chunk.js"
+  ]
+}
