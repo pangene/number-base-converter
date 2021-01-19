@@ -47,9 +47,15 @@ body {
   align-items: center;
 }
 
-#root {
-  padding-top: 30px;
+.block {
+  display: block;
+  border: black 1px solid;
 }
+
+.float-left {
+  float: left;
+}
+
 
 @media only screen and (max-width: 1200px) { 
   .container{

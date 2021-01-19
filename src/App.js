@@ -2,9 +2,12 @@ import React from 'react';
 import './App.css';
 import './index.css';
 
+
 const DEFAULT_VALUE = 22;
 const DEFAULT_BASE_FROM = 2;
-const DEFAULT_BASE_TO = 10;
+const DEFAULT_BASE_TO = 12;
+const ALPHABET = [...'abcdefghijklmnopqrstuvwxyz']  // Useful for larger bases
+
 
 function validateParseIntInput(str, base) {
   if (str === '') {
@@ -15,6 +18,7 @@ function validateParseIntInput(str, base) {
   arr.sort((a, b) => a > b ? a : b)
   return arr.every(input => isFinite(parseInt(input, base)))
 }
+
 
 class App extends React.Component {
   constructor(props) {
@@ -45,19 +49,24 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <NumberBaseInput 
-          value={this.state.value}
-          base={this.state.baseFrom}
-          onValueChange={this.onValueChange}
-          onBaseChange={this.onBaseFromChange}/> 
-        <i className="to fa fa-long-arrow-right"></i> 
-        <NumberBaseInput 
-          value={this.state.value}
-          base={this.state.baseTo}
-          onBaseChange={this.onBaseToChange}
-          readOnly={true}/>
+        <div id="base-converter">
+          <NumberBaseInput 
+            value={this.state.value}
+            base={this.state.baseFrom}
+            onValueChange={this.onValueChange}
+            onBaseChange={this.onBaseFromChange}/> 
+          <i className="arrow fa fa-long-arrow-right"></i> 
+          <NumberBaseInput 
+            value={this.state.value}
+            base={this.state.baseTo}
+            onBaseChange={this.onBaseToChange}
+            readOnly={true}/>
+        </div>
         <hr />
-        <ConversionVisualizer />
+        <ConversionVisualizer 
+          value={this.state.value}
+          baseFrom={this.state.baseFrom}
+          baseTo={this.state.baseTo}/>
       </div>
     )
   }
@@ -82,6 +91,7 @@ class NumberBaseInput extends React.Component {
 
   handleBaseChange(e) {
     let base = e.target.value;
+    // TODO: Make changing bases better
     if (e.target.value < 2) base = 2;
     if (e.target.value > 36) base = 36;
     this.props.onBaseChange(base);
@@ -95,8 +105,7 @@ class NumberBaseInput extends React.Component {
 
   render() {
     const base = this.props.base;
-
-    let value = this.props.value.toString(base);
+    const value = this.props.value.toString(base);
 
     let readOnly = '';
     if (this.props.readOnly) {
@@ -125,22 +134,131 @@ class NumberBaseInput extends React.Component {
 }
 
 class ConversionVisualizer extends React.Component {
-  renderToDecimal() {
+  renderToDecimal(value, baseFrom) {  // This could be another component?
+    const startingValue = value.toString(baseFrom);
+    const startingValueDigits = Array.from(String(startingValue));
 
+    const digitTimesDecimalElements = startingValueDigits.map((item, index) => {
+        let basePower = startingValueDigits.length - 1 - index;
+        let plusDiv;
+        if (basePower !== 0) {
+          plusDiv = <div className="centered plus"> + </div>
+        }
+        return (  // This could be another component?
+          <div>
+            <span className="centered equation">
+              <span className="expression">
+                {item} * {baseFrom}<sup>{basePower}</sup>
+              </span> 
+              <span className="answer">
+                = {item * baseFrom**basePower}
+              </span>
+            </span>
+            {plusDiv}
+          </div>
+        )
+      }
+    )
+
+    return (
+      <div>
+        <p className="starting-value">
+          {startingValue}<sub>{baseFrom}</sub> =
+        </p>
+        {digitTimesDecimalElements}
+        <p className="ending-value">
+          = {value}<sub>10</sub>
+        </p>
+      </div>
+    )
   }
 
-  renderFromDecimal() {
+  renderFromDecimal(value, baseTo) {
+    let startingValue = value;
+    let equationElements = [];
 
+    while (value) {
+      const quotient = Math.trunc(value / baseTo);
+      let remainder = value % baseTo;
+      let digitIndicator;
+
+      if (remainder > 9) {
+        let remainder_symbol = ALPHABET[remainder - 10];
+        remainder = remainder_symbol + ` (${remainder})`
+      }
+
+      if (startingValue === value) {
+        digitIndicator = (
+          <span> 
+            <small>
+              <i className="fa fa-long-arrow-left"></i> Rightmost digit 
+            </small>
+          </span>
+        )
+      } else if (quotient === 0) {
+        digitIndicator = (
+          <span> 
+            <small>
+              <i className="fa fa-long-arrow-left"></i> Leftmost digit 
+            </small>
+          </span>
+        )
+      }
+
+
+      equationElements.push(
+        <div>
+          <span className="centered equation">
+            <span className="expression">
+              {value} / {baseTo} = {quotient} 
+            </span>
+            <span className="remainder">
+              Remainder: {remainder} {digitIndicator}
+            </span>
+          </span>
+        </div>
+      )
+
+      value = quotient;
+    }
+
+    return (
+      <div>
+        <p className="starting-value">
+          {startingValue}<sub>10</sub> =
+        </p>
+        {equationElements}
+        <p className="ending-value">
+          = {startingValue.toString(baseTo)}<sub>{baseTo}</sub>
+        </p>
+      </div>
+    )
   }
 
   render() {
+    const value = this.props.value;
+    const baseFrom = this.props.baseFrom;
+    const baseTo = this.props.baseTo;
+
+    const visualizeToDecimal = (value !== 'Invalid' 
+      && baseFrom !== baseTo 
+      && baseFrom !== 10);
+    const visualizeFromDecimal = (value !== 'Invalid' 
+      && baseFrom !== baseTo
+      && baseTo !== 10);
+
     return (
       <div className="centered" id="visualizer">
-        <h2> Conversion visualized:</h2>
-        COMING SOON
+        <h2>Conversion visualized:</h2>
+        <div id="visualizer-content">
+          {visualizeToDecimal && this.renderToDecimal(value, baseFrom)}
+          <br />
+          {visualizeFromDecimal && this.renderFromDecimal(value, baseTo)}
+        </div>
       </div>
     )
   }
 }
+
 
 export default App;

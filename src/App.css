@@ -4,7 +4,11 @@
   font-family: Courier, monospace;
 }
 
-.to {
+#base-converter {
+  padding: 80px 0;
+}
+
+.arrow { 
   display: inline-block;
   padding-left: 10px;
   padding-right: 10px;
@@ -57,6 +61,45 @@
 
 #visualizer {
   padding-top: 20px;
+  display: block;
+}
+
+#visualizer-content {
+  padding-top: 20px;
+  width: 80%;
+  margin: auto;
+}
+
+.starting-value, .ending-value {
+  font-size: 20px;
+}
+
+.ending-value {
+  text-align: right;
+}
+
+.equation {
+  padding: 10px;
+}
+
+.equation sup {
+  padding-bottom: 10px;
+}
+
+.expression {
+  padding-right: 8px;
+}
+
+.answer {
+  padding-top: 2px;
+}
+
+.remainder {
+  padding-left: 20px;
+}
+
+.plus {
+  padding-left: 84px;
 }
 
 @media only screen and (max-width: 790px) { 
